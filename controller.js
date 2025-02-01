@@ -79,8 +79,11 @@ const updateLocation = (req, res) => {
 const getFriends = (req, res) => {
     const user_id = 1;
     pool.query(queries.getFriends(user_id), (error, results) => {
-        if (error) throw error
-        res.status(200).json(results.rows)
+        if (error) {
+          res.status(500).end()
+        } else {
+          res.status(200).json(results.rows)
+        }      
   })
 }
 
@@ -98,16 +101,44 @@ const deleteFriend = (req, res) => {
     const filtered = friends_array.filter(id => id != req.params.id);
 
     pool.query(queries.udateFriends(user_id, JSON.stringify(filtered)), (error) => {
-      if (error) throw error
-      res.status(200).end();
-
+      if (error) {
+        res.status(500).end();        
+      } else {
+        res.status(200).end();
+      }
     })    
   })
+}
+
+const getInvites = (req, res) => {
+    const user_id = req.params.id;
+    pool.query(queries.getIncomingInvites(user_id), (error, results) => {
+      if(error) {
+        console.log(error)
+        res.status(500).end() 
+      } else {
+        const incoming = results.rows
+        pool.query(queries.getOutgoingInvites(user_id), (error, results) => {
+          if(error) {
+            res.status(500).end()   
+          }else{
+            const outgoing = results.rows
+
+            res.status(200).json({
+              "incoming" : incoming,
+              "outgoing" : outgoing
+            })
+
+          }
+        })     
+      }
+    })
 }
 
 module.exports = {
     getFriends,
     deleteFriend,
     updateUser,
-    updateLocation
+    updateLocation,
+    getInvites
 }

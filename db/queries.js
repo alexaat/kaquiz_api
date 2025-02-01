@@ -63,9 +63,105 @@ const updateLocation = (user_id, lat, lng) => {
     }
 }
 
+/*
+model
+-----
+
+{
+  "incoming": [
+    {
+      "id": 0,
+      "sender": {
+        "id": 0,
+        "name": "string",
+        "avatar": "string"
+      },
+      "created_at": "2025-02-01T21:30:18.930Z"
+    }
+  ],
+  "outgoing": [
+    {
+      "id": 0,
+      "recipient": {
+        "id": 0,
+        "name": "string",
+        "avatar": "string"
+      },
+      "created_at": "2025-02-01T21:30:18.930Z"
+    }
+  ]
+}
+
+*/
+
+const getIncomingInvites = (user_id) => {
+    return {
+        text: `
+            SELECT
+                invites.id AS id,
+                jsonb_build_object('id', users.id, 'name', name, 'avatar', avatar) AS sender,
+                created_at
+            FROM
+                invites
+            JOIN
+                users
+            ON
+                users.id = invites.from_id
+            WHERE
+                to_id = $1
+        `,
+        values: [user_id]
+    }
+}
+
+const getOutgoingInvites = (user_id) => {
+    return {
+        text: `
+            SELECT
+                invites.id AS id,
+                jsonb_build_object('id', users.id, 'name', name, 'avatar', avatar) AS recipient,
+                created_at
+            FROM
+                invites
+            JOIN
+                users
+            ON
+                users.id = invites.to_id
+            WHERE
+                from_id = $1      
+        
+        `,
+        values: [user_id]
+    }
+}
+
     
 /*
 backup
+
+        SELECT
+            jsonb_build_array(
+                jsonb_build_object(
+                    'id', invites.id,
+                    'sender', jsonb_build_object('id', users.id, 'name', name, 'avatar', avatar),
+                    'created_at', created_at
+                )
+            ) AS incoming
+        FROM
+            invites
+        INNER JOIN
+            users
+        ON
+            users.id = to_id
+        WHERE
+            from_id = $1     
+
+
+
+
+
+
+
             WITH temporaryTable (friend_ids) AS (
                 SELECT
                 jsonb_array_elements_text(friends)::int
@@ -115,6 +211,11 @@ INSERT INTO friends (user_id, friends) VALUES (1, '[2]');
 
 ALTER TABLE users ADD friends JSONB;
 
+
+CREATE TABLE invites (id SERIAL PRIMARY KEY, from_id INT NOT NULL, to_id INT NOT NULL , created_at TIMESTAMP DEFAULT current_timestamp);
+INSERT INTO invites (from_id, to_id) VALUES (1, 2);
+INSERT INTO invites (from_id, to_id) VALUES (2, 1);
+
 */
 
 /*
@@ -138,5 +239,7 @@ module.exports = {
     udateFriends,
     updateName,
     updateAvatar,
-    updateLocation
+    updateLocation,
+    getIncomingInvites,
+    getOutgoingInvites
 }
