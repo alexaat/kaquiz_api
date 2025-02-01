@@ -135,6 +135,28 @@ const getOutgoingInvites = (user_id) => {
     }
 }
 
+const sendInvite = (sender_id, recipient_id) => {
+    return {
+        text: `
+            INSERT INTO invites(from_id, to_id)
+            VALUES ($1, $2)
+            ON CONFLICT (from_id, to_id) DO UPDATE 
+                SET
+                from_id = $1, 
+                to_id = $2,
+                created_at = current_timestamp
+        `,
+        values: [sender_id, recipient_id]
+    }
+}
+
+const findUser = (user_id) => {
+    return {
+        text: 'SELECT * FROM users WHERE id = $1',
+        values: [user_id]
+    }
+}
+
     
 /*
 backup
@@ -212,7 +234,7 @@ INSERT INTO friends (user_id, friends) VALUES (1, '[2]');
 ALTER TABLE users ADD friends JSONB;
 
 
-CREATE TABLE invites (id SERIAL PRIMARY KEY, from_id INT NOT NULL, to_id INT NOT NULL , created_at TIMESTAMP DEFAULT current_timestamp);
+CREATE TABLE invites (id SERIAL PRIMARY KEY, from_id INT NOT NULL, to_id INT NOT NULL , created_at TIMESTAMP DEFAULT current_timestamp, UNIQUE (from_id, to_id));
 INSERT INTO invites (from_id, to_id) VALUES (1, 2);
 INSERT INTO invites (from_id, to_id) VALUES (2, 1);
 
@@ -241,5 +263,7 @@ module.exports = {
     updateAvatar,
     updateLocation,
     getIncomingInvites,
-    getOutgoingInvites
+    getOutgoingInvites,
+    sendInvite,
+    findUser
 }

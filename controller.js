@@ -135,10 +135,42 @@ const getInvites = (req, res) => {
     })
 }
 
+const sendInvite = (req, res) => {
+  const id = 1; //from auth
+  let user_id = req.params.id
+    
+  //validation
+  user_id = parseInt(user_id)
+  if(user_id == NaN){
+    res.status(404).end()
+    return
+  }
+
+  //check user exists
+  pool.query(queries.findUser(user_id), (error, results) => {
+    if (error) {
+      res.status(500).end()
+      return
+    } 
+    if (results.rows.length === 0){
+      res.status(404).end()      
+    } else {
+      pool.query(queries.sendInvite(id, user_id), (error) => {
+        if (error) {
+          res.status(500).end()
+        } else {
+          res.status(200).end()
+        }
+      })
+    }
+  })
+}
+
 module.exports = {
     getFriends,
     deleteFriend,
     updateUser,
     updateLocation,
-    getInvites
+    getInvites,
+    sendInvite
 }

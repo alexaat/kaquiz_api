@@ -10,9 +10,7 @@ router.post('/:id/decline', (req, res) => {
     res.status(200).send(`Decline invite to user with id: ${req.params.id}`)
 });
 
-router.post('/:id', (req, res) => {
-    res.status(200).send(`Send invite to user with id: ${req.params.id}`)
-});
+router.post('/:id', controller.sendInvite);
 
 router.get('/:id', controller.getInvites);
 
