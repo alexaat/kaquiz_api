@@ -1,36 +1,56 @@
 const pool = require('./db/connection')
 const queries = require('./db/queries')
 
+const updateUser = (req, res) => {
+  const user_id = 1;
+
+  const body = req.body
+  let name = body["name"];
+  let avatar = body["avatar"];
+
+  if(name && name.trim()){
+    name = name.trim();
+    pool.query(queries.updateName(user_id, name), (error, results) => {
+      if (error) {
+        res.status(500).end()
+        return
+      }
+      if(avatar && avatar.trim()){
+        avatar = avatar.trim();
+        pool.query(queries.updateAvatar(user_id, avatar), (error, results) => {
+          if (error) {
+            res.status(500).end()
+            return
+          }
+          res.status(200).json(results.rows)
+        })
+      } else{
+        res.status(200).json(results.rows)
+      }
+    })
+  } else if(avatar && avatar.trim()){
+    avatar = avatar.trim();
+    pool.query(queries.updateAvatar(user_id, avatar), (error, results) => {
+      if (error) {
+        res.status(500).end()
+        return
+      }
+      res.status(200).json(results.rows)
+    })
+  } else {
+    res.status(200).end()
+  }
+}
+
+
+
+
 const getFriends = (req, res) => {
-    pool.query(queries.getFriends(1), (error, results) => {
+    const user_id = 1;
+    pool.query(queries.getFriends(user_id), (error, results) => {
         if (error) throw error
         res.status(200).json(results.rows)
-})
-
-    /*
-    res.status(200).json([
-        {
-            id: 1,
-            name: "Mike",
-            avatar: "images/mike.jpg",
-            location: {
-              latitude: "33.15161564",
-              longitude: "-1.02655545",
-              timestamp: "2025-01-31T16:58:11.077Z"
-            }
-          },
-          {
-            id: 2,
-            name: "Nick",
-            avatar: "images/nick.jpg",
-            location: {
-              latitude: "-33.15161564",
-              longitude: "1.02655545",
-              timestamp: "2025-01-31T16:58:11.077Z"
-            }
-          }
-    ]);
-    */
+  })
 }
 
 const deleteFriend = (req, res) => {
@@ -41,14 +61,14 @@ const deleteFriend = (req, res) => {
     if (error) throw error
     const friends_array = results.rows[0][0];
     if (!friends_array) {
-      res.status(200).send('');
+      res.status(200).end();
       return;
     }
     const filtered = friends_array.filter(id => id != req.params.id);
 
     pool.query(queries.udateFriends(user_id, JSON.stringify(filtered)), (error) => {
       if (error) throw error
-      res.status(200).send('');
+      res.status(200).end();
 
     })    
   })
@@ -56,5 +76,6 @@ const deleteFriend = (req, res) => {
 
 module.exports = {
     getFriends,
-    deleteFriend
+    deleteFriend,
+    updateUser
 }

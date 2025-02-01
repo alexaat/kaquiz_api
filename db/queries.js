@@ -25,9 +25,6 @@
         values: [id]
     }
  }
-    
-
-
 
 const findFriends = (id) => {
     return {
@@ -44,6 +41,20 @@ const udateFriends = (user_id, friends) => {
     }
 
 }
+
+const updateName = (user_id, name) => {
+   return {
+        text: "UPDATE users SET name = $1 WHERE id = $2 RETURNING id, name, avatar, email",
+        values: [name, user_id]
+   }     
+}
+
+const updateAvatar = (user_id, avatar) => {
+    return {
+         text: "UPDATE users SET avatar = $1 WHERE id = $2 RETURNING id, name, avatar, email",
+         values: [avatar, user_id]
+    }     
+ }
 
     
 /*
@@ -99,8 +110,20 @@ ALTER TABLE users ADD friends JSONB;
 
 */
 
+/*
+
+CURL
+
+curl -H 'Content-Type: application/json' -X PUT \
+    -d '{"avatar": "images/new.png",
+            "name": "Doug"}' \
+    http://localhost:3000/users
+*/
+
 module.exports = {
     getFriends,
     findFriends,
-    udateFriends
+    udateFriends,
+    updateName,
+    updateAvatar
 }

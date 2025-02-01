@@ -1,5 +1,6 @@
 const port = 3000;
 const express = require('express');
+const bodyParser = require('body-parser');
 const invitesRouter = require('./routes/invites')
 const friendsRouter = require('./routes/friends')
 const usersRouter = require('./routes/users')
@@ -9,6 +10,7 @@ const authRouter = require('./routes/auth')
 const app = express();
 
 app.use(express.json())
+app.use(bodyParser.json());
 
 app.use('/invites', invitesRouter)
 app.use('/friends', friendsRouter)

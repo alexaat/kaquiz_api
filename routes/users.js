@@ -1,8 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const controller = require('../controller')
 
-router.put('/', (req, res) => {
-    res.status(200).send(`Update user's avatar and name`)
-});
+router.put('/', controller.updateUser);
 
 module.exports = router
