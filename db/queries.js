@@ -32,7 +32,7 @@ const findFriends = (id) => {
         values: [id],
         rowMode: 'array'
     }
-  }
+}
    
 const udateFriends = (user_id, friends) => {
     return {
@@ -54,7 +54,14 @@ const updateAvatar = (user_id, avatar) => {
          text: "UPDATE users SET avatar = $1 WHERE id = $2 RETURNING id, name, avatar, email",
          values: [avatar, user_id]
     }     
- }
+}
+
+const updateLocation = (user_id, lat, lng) => {
+    return  {
+        text: "UPDATE locations SET latitude = $1, longitude = $2, timestamp = current_timestamp WHERE user_id = $3",
+        values: [lat, lng, user_id]
+    }
+}
 
     
 /*
@@ -118,6 +125,11 @@ curl -H 'Content-Type: application/json' -X PUT \
     -d '{"avatar": "images/new.png",
             "name": "Doug"}' \
     http://localhost:3000/users
+
+curl -H 'Content-Type: application/json' -X POST \
+    -d '{"latitude": "51.508347",
+            "longitude": "-0.0764236"}' \
+    http://localhost:3000/locations
 */
 
 module.exports = {
@@ -125,5 +137,6 @@ module.exports = {
     findFriends,
     udateFriends,
     updateName,
-    updateAvatar
+    updateAvatar,
+    updateLocation
 }

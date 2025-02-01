@@ -1,8 +1,7 @@
 const express = require('express')
 const router = express.Router()
+const controller = require('../controller')
 
-router.post('/', (req, res) => {
-    res.status(200).send(`Submit user's location`)
-});
+router.post('/', controller.updateLocation);
 
 module.exports = router

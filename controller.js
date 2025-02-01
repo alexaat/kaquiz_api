@@ -42,8 +42,39 @@ const updateUser = (req, res) => {
   }
 }
 
+const updateLocation = (req, res) => {
+  const user_id = 1;
+
+  const body = req.body
+  let latitude = body["latitude"];
+  let longitude = body["longitude"];
+
+  if(latitude && longitude){
+    latitude = latitude.trim()
+    longitude = longitude.trim()
+    if(latitude && longitude) {
+      const lat = parseFloat(latitude) 
+      const lng =  parseFloat(longitude) 
+      if(lat == NaN || lng == NaN){
+        res.status(200).end()          
+      }else{
+        pool.query(queries.updateLocation(user_id, lat, lng), (error, results) => {
+          if (error) {
+            res.status(500).end()
+          } else {
+            res.status(200).end()
+          }
+        })
+      }
+    } else {
+      res.status(200).end()
+    }
+  } else {
+    res.status(200).end()
+  } 
 
 
+}
 
 const getFriends = (req, res) => {
     const user_id = 1;
@@ -77,5 +108,6 @@ const deleteFriend = (req, res) => {
 module.exports = {
     getFriends,
     deleteFriend,
-    updateUser
+    updateUser,
+    updateLocation
 }
