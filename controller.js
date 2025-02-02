@@ -173,35 +173,53 @@ const acceptInvite = (req, res) => {
   //validate
   friend_id = parseInt(friend_id)
   if(friend_id == NaN) {
-    res.status(404).end()
+      console.log('invalid param')
+      res.status(404).end()
     return
   }
 
   //check that invite exists
   pool.query(queries.findInvite(user_id, friend_id), (error, results) => {
     if (error) {
+      console.log(error)
       res.status(500).end()
       return
     } 
     if (results.rows.length === 0){
+      console.log('invalid param')
       res.status(404).end()
       return
     }
-    let inviteId = results.rows[0]["id"]
+    //let inviteId = results.rows[0]["id"]
 
     //remove invite from table
-    pool.query(queries.deleteInvite(inviteId), (error) => {
+    pool.query(queries.deleteInvites(user_id, friend_id), (error) => {
       if (error) {
+        console.log(error)
         res.status(500).end()
         return
       }
+
       //add friend
-      pool.query(queries.addFriend(friend_id), (error) => {
+      pool.query(queries.findFriends(user_id), (error, results) => {
         if (error) {
+          console.log(error)
           res.status(500).end()
           return
-        } 
+        }
+        let friends_array = results.rows[0][0];
+        friends_array.push(friend_id);
+        pool.query(queries.udateFriends(user_id, JSON.stringify(friends_array)), (error) => {
+          if (error) {
+            console.log(error)
+            res.status(500).end();        
+          } else {
+            res.status(200).end();
+          }
+        })
+
       })
+
     })
   })
 }

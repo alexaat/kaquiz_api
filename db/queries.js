@@ -164,6 +164,14 @@ const findInvite = (user_id, friend_id) => {
     }
 }
 
+const deleteInvites = (user_id, friend_id) => {
+    return {
+        text: `
+        DELETE FROM invites WHERE (from_id = $1 AND to_id = $2) OR (from_id = $2 AND to_id = $1)`,
+        values: [user_id, friend_id]
+    }
+}
+
     
 /*
 backup
@@ -251,6 +259,12 @@ INSERT INTO invites (from_id, to_id) VALUES (2, 1);
 
 CURL
 
+delete friend
+curl -X DELETE http://localhost:3000/friends/2
+
+//send invite
+curl -X POST http://localhost:3000/invites/2
+
 curl -H 'Content-Type: application/json' -X PUT \
     -d '{"avatar": "images/new.png",
             "name": "Doug"}' \
@@ -261,7 +275,11 @@ curl -H 'Content-Type: application/json' -X POST \
             "longitude": "-0.0764236"}' \
     http://localhost:3000/locations
 
-    curl -H 'Content-Type: application/json' -X POST http://localhost:3000/invites/4/accept
+
+    accept invite
+    curl -H 'Content-Type: application/json' -X POST http://localhost:3000/invites/2/accept
+
+
 */
 
 module.exports = {
@@ -275,5 +293,6 @@ module.exports = {
     getOutgoingInvites,
     sendInvite,
     findUser,
-    findInvite
+    findInvite,
+    deleteInvites
 }
