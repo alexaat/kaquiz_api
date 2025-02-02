@@ -166,11 +166,52 @@ const sendInvite = (req, res) => {
   })
 }
 
+const acceptInvite = (req, res) => {
+  const user_id = 1
+  let friend_id = req.params.id
+
+  //validate
+  friend_id = parseInt(friend_id)
+  if(friend_id == NaN) {
+    res.status(404).end()
+    return
+  }
+
+  //check that invite exists
+  pool.query(queries.findInvite(user_id, friend_id), (error, results) => {
+    if (error) {
+      res.status(500).end()
+      return
+    } 
+    if (results.rows.length === 0){
+      res.status(404).end()
+      return
+    }
+    let inviteId = results.rows[0]["id"]
+
+    //remove invite from table
+    pool.query(queries.deleteInvite(inviteId), (error) => {
+      if (error) {
+        res.status(500).end()
+        return
+      }
+      //add friend
+      pool.query(queries.addFriend(friend_id), (error) => {
+        if (error) {
+          res.status(500).end()
+          return
+        } 
+      })
+    })
+  })
+}
+
 module.exports = {
     getFriends,
     deleteFriend,
     updateUser,
     updateLocation,
     getInvites,
-    sendInvite
+    sendInvite,
+    acceptInvite
 }

@@ -157,6 +157,13 @@ const findUser = (user_id) => {
     }
 }
 
+const findInvite = (user_id, friend_id) => {
+    return {
+        text: 'SELECT * FROM invites WHERE from_id = $1 AND to_id = $2',
+        values: [friend_id, user_id]
+    }
+}
+
     
 /*
 backup
@@ -253,6 +260,8 @@ curl -H 'Content-Type: application/json' -X POST \
     -d '{"latitude": "51.508347",
             "longitude": "-0.0764236"}' \
     http://localhost:3000/locations
+
+    curl -H 'Content-Type: application/json' -X POST http://localhost:3000/invites/4/accept
 */
 
 module.exports = {
@@ -265,5 +274,6 @@ module.exports = {
     getIncomingInvites,
     getOutgoingInvites,
     sendInvite,
-    findUser
+    findUser,
+    findInvite
 }
