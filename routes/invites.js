@@ -4,9 +4,7 @@ const controller = require('../controller')
 
 router.post('/:id/accept', controller.acceptInvite);
 
-router.post('/:id/decline', (req, res) => {
-    res.status(200).send(`Decline invite to user with id: ${req.params.id}`)
-});
+router.post('/:id/decline', controller.declineInvite);
 
 router.post('/:id', controller.sendInvite);
 

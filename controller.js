@@ -167,7 +167,7 @@ const sendInvite = (req, res) => {
 }
 
 const acceptInvite = (req, res) => {
-  const user_id = 1
+  const user_id = 1 // from auth
   let friend_id = req.params.id
 
   //validate
@@ -224,6 +224,43 @@ const acceptInvite = (req, res) => {
   })
 }
 
+const declineInvite = (req, res) => {
+  const user_id = 3 // from auth
+  let friend_id = req.params.id
+
+  //validate
+  friend_id = parseInt(friend_id)
+  if(friend_id == NaN) {
+      console.log('invalid param')
+      res.status(404).end()
+    return
+  }
+
+  //check that invite exists
+  pool.query(queries.findInvite(user_id, friend_id), (error, results) => {
+    if (error) {
+      console.log(error)
+      res.status(500).end()
+      return
+    } 
+    if (results.rows.length === 0){
+      console.log('invalid param')
+      res.status(404).end()
+      return
+    }
+    //let inviteId = results.rows[0]["id"]
+
+    //remove invite from table
+    pool.query(queries.deleteInvites(user_id, friend_id), (error) => {
+      if (error) {
+        console.log(error)
+        res.status(500).end()
+        return
+      }
+    })
+  })
+}
+
 module.exports = {
     getFriends,
     deleteFriend,
@@ -231,5 +268,6 @@ module.exports = {
     updateLocation,
     getInvites,
     sendInvite,
-    acceptInvite
+    acceptInvite,
+    declineInvite
 }

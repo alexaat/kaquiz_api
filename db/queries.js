@@ -279,6 +279,9 @@ curl -H 'Content-Type: application/json' -X POST \
     accept invite
     curl -H 'Content-Type: application/json' -X POST http://localhost:3000/invites/2/accept
 
+    decline invite
+    curl -H 'Content-Type: application/json' -X POST http://localhost:3000/invites/2/decline
+
 
 */
 
