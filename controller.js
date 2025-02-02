@@ -136,7 +136,7 @@ const getInvites = (req, res) => {
 }
 
 const sendInvite = (req, res) => {
-  const id = 1; //from auth
+  const id = 2; //from auth
   let user_id = req.params.id
     
   //validation
@@ -155,12 +155,27 @@ const sendInvite = (req, res) => {
     if (results.rows.length === 0){
       res.status(404).end()      
     } else {
-      pool.query(queries.sendInvite(id, user_id), (error) => {
+
+      //check that already freinds
+      pool.query(queries.getFriends(id), (error, results) => {
         if (error) {
           res.status(500).end()
-        } else {
+          return
+        } 
+        const friends = results.rows;
+        const fr = friends.find(friend => friend.id == user_id)
+        if (fr){
           res.status(200).end()
+          return
         }
+        //send invite
+        pool.query(queries.sendInvite(id, user_id), (error) => {
+          if (error) {
+            res.status(500).end()
+          } else {
+            res.status(200).end()
+          }
+        })
       })
     }
   })
@@ -225,7 +240,7 @@ const acceptInvite = (req, res) => {
 }
 
 const declineInvite = (req, res) => {
-  const user_id = 3 // from auth
+  const user_id = 2 // from auth
   let friend_id = req.params.id
 
   //validate
@@ -256,7 +271,8 @@ const declineInvite = (req, res) => {
         console.log(error)
         res.status(500).end()
         return
-      }
+      } 
+      res.status(200).end()
     })
   })
 }
