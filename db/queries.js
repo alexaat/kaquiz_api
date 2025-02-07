@@ -244,7 +244,7 @@ INSERT INTO invites (from_id, to_id) VALUES (2, 1);
 CURL
 
 get friends
-curl http://localhost:3000/friends --header "authorization: ya29.a0AXeO80TxUT3yt-Wq-_ws-G-8ZYpIRG-clYxI3o7lK2Fj5DbUW_VZcwsUVKjm6NcV8sWkt6pb3U-Lcjztvx8LvJRNK9SvU2ETn7mmcCSABe4pTOywPCeVoxcH_J5apTClkk3DYbtji0RuCeoankhwYxivWrP8dPQud3vO1cV0aCgYKAcASARISFQHGX2Mi2LfaF6Ar9aO2GiSIEqB24Q0175"
+curl http://localhost:3000/friends --header "authorization: ya.123456"
 
 delete friend
 curl -X DELETE http://localhost:3000/friends/2
