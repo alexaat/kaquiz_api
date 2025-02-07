@@ -63,36 +63,12 @@ const updateLocation = (user_id, lat, lng) => {
     }
 }
 
-/*
-model
------
-
-{
-  "incoming": [
-    {
-      "id": 0,
-      "sender": {
-        "id": 0,
-        "name": "string",
-        "avatar": "string"
-      },
-      "created_at": "2025-02-01T21:30:18.930Z"
+const findUserByEmail = (email) => {
+    return  {
+        text: "SELECT * FROM users WHERE email = $1",
+        values: [email]
     }
-  ],
-  "outgoing": [
-    {
-      "id": 0,
-      "recipient": {
-        "id": 0,
-        "name": "string",
-        "avatar": "string"
-      },
-      "created_at": "2025-02-01T21:30:18.930Z"
-    }
-  ]
 }
-
-*/
 
 const getIncomingInvites = (user_id) => {
     return {
@@ -169,6 +145,14 @@ const deleteInvites = (user_id, friend_id) => {
         text: `
         DELETE FROM invites WHERE (from_id = $1 AND to_id = $2) OR (from_id = $2 AND to_id = $1)`,
         values: [user_id, friend_id]
+    }
+}
+
+const addUser = (name, email, avatar) => {
+    return {
+        text: `
+        INSERT INTO users (name, email, avatar) VALUES ($1,$2,$3) RETURNING id`,
+        values: [name, email, avatar]
     }
 }
 
@@ -259,6 +243,9 @@ INSERT INTO invites (from_id, to_id) VALUES (2, 1);
 
 CURL
 
+get friends
+curl http://localhost:3000/friends --header "authorization: ya29.a0AXeO80TxUT3yt-Wq-_ws-G-8ZYpIRG-clYxI3o7lK2Fj5DbUW_VZcwsUVKjm6NcV8sWkt6pb3U-Lcjztvx8LvJRNK9SvU2ETn7mmcCSABe4pTOywPCeVoxcH_J5apTClkk3DYbtji0RuCeoankhwYxivWrP8dPQud3vO1cV0aCgYKAcASARISFQHGX2Mi2LfaF6Ar9aO2GiSIEqB24Q0175"
+
 delete friend
 curl -X DELETE http://localhost:3000/friends/2
 
@@ -297,5 +284,7 @@ module.exports = {
     sendInvite,
     findUser,
     findInvite,
-    deleteInvites
+    deleteInvites,
+    findUserByEmail,
+    addUser
 }

@@ -10,5 +10,4 @@ router.post('/:id', controller.sendInvite);
 
 router.get('/:id', controller.getInvites);
 
-
 module.exports = router
