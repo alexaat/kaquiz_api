@@ -1,8 +1,8 @@
 const express = require('express')
 const router = express.Router()
+const controller = require('../controller')
 
-router.post('/', (req, res) => {
-    res.status(200).send(`Authenticate user via Google`)
-});
+
+router.post('/', controller.authHandler);
 
 module.exports = router
